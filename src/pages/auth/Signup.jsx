@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import "./Auth.css";
+import { apiRequest } from "../../lib/api";
+import "./auth.css";
  
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
  
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
  
     const form = e.currentTarget;
@@ -22,7 +24,28 @@ export default function Signup() {
       return;
     }
  
-    setMessage("Registration UI is ready. Backend is not connected yet.");
+    setMessage("");
+    setIsSubmitting(true);
+
+    const formData = new FormData(form);
+    try {
+      const result = await apiRequest("/api/auth/community/register", {
+        method: "POST",
+        body: JSON.stringify({
+          full_name: formData.get("name"),
+          email: formData.get("email"),
+          mobile: formData.get("phone"),
+          password: formData.get("password"),
+          confirm_password: formData.get("confirmPassword"),
+        }),
+      });
+      setMessage(result.message || "Account created successfully. You can now sign in.");
+      form.reset();
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
  
   return (
@@ -170,8 +193,8 @@ export default function Signup() {
               </div>
  
               {/* SUBMIT */}
-              <button type="submit" className="login-button">
-                <span>Create account</span>
+              <button type="submit" className="login-button" disabled={isSubmitting}>
+                <span>{isSubmitting ? "Creating account..." : "Create account"}</span>
                 <span className="arrow">→</span>
               </button>
  

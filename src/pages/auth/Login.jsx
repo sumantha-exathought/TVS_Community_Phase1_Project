@@ -1,17 +1,60 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import "./Auth.css";
+import { Link, useNavigate } from "react-router-dom";
+import { apiRequest } from "../../lib/api";
+import "./auth.css";
  
 export default function Login() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
  
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
- 
-    setMessage(
-      "Login UI is ready. Backend authentication is not connected yet.",
-    );
+    setMessage("");
+    setIsSubmitting(true);
+
+    const formData = new FormData(e.currentTarget);
+    const accountType = formData.get("accountType");
+    const endpoint = accountType === "admin"
+      ? "/api/auth/login"
+      : "/api/auth/community/login";
+
+    try {
+      const result = await apiRequest(endpoint, {
+        method: "POST",
+        body: JSON.stringify({
+          email: formData.get("email"),
+          password: formData.get("password"),
+        }),
+      });
+
+      const account = accountType === "admin" ? result.admin : result.user;
+      if (!result.access_token || !account) {
+        throw new Error("The backend did not return a valid login response.");
+      }
+
+      localStorage.setItem("access_token", result.access_token);
+      localStorage.setItem(
+        "auth_user",
+        JSON.stringify({
+          ...account,
+          accountType,
+        }),
+      );
+
+      if (accountType !== "admin") {
+        navigate("/user/dashboard");
+      } else if (String(account.role).toLowerCase().includes("super")) {
+        navigate("/super-admin/dashboard");
+      } else {
+        navigate("/admin/dashboard");
+      }
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
  
   return (
@@ -58,6 +101,19 @@ export default function Login() {
             <p className="form-description">Enter your details to continue.</p>
  
             <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label htmlFor="account-type">Account type</label>
+                <select
+                  id="account-type"
+                  name="accountType"
+                  defaultValue="community"
+                  required
+                >
+                  <option value="community">Community member</option>
+                  <option value="admin">Admin or Super Admin</option>
+                </select>
+              </div>
+
               {/* EMAIL */}
               <div className="form-group">
                 <label htmlFor="email">Email address</label>
@@ -115,8 +171,8 @@ export default function Login() {
               </div>
  
               {/* LOGIN BUTTON */}
-              <button type="submit" className="login-button">
-                <span>Sign in</span>
+              <button type="submit" className="login-button" disabled={isSubmitting}>
+                <span>{isSubmitting ? "Signing in..." : "Sign in"}</span>
                 <span className="arrow">→</span>
               </button>
  
