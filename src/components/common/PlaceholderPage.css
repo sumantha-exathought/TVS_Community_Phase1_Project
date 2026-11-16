@@ -1,0 +1,43 @@
+.placeholder-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+}
+
+.placeholder-card {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 700px;
+  text-align: center;
+
+  box-shadow:
+    0 5px 25px rgba(0,0,0,0.08);
+}
+
+.placeholder-card h1 {
+  color: #003B73;
+  margin-bottom: 15px;
+}
+
+.placeholder-card p {
+  color: #6b7280;
+}
+
+.coming-soon {
+  margin-top: 20px;
+
+  background: #fff4e5;
+
+  color: #92400e;
+
+  display: inline-block;
+
+  padding: 10px 18px;
+
+  border-radius: 20px;
+
+  font-weight: 600;
+}

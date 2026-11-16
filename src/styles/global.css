@@ -1,0 +1,42 @@
+:root {
+  --tvs-blue: #0054A6;
+  --tvs-dark-blue: #003B73;
+  --tvs-red: #E31E24;
+
+  --bg-light: #F5F7FA;
+  --text-dark: #1F2937;
+  --white: #FFFFFF;
+
+  --success: #22C55E;
+  --warning: #F59E0B;
+}
+
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: var(--bg-light);
+}
+
+.page-container {
+  padding: 24px;
+}
+
+.dashboard-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--tvs-dark-blue);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.table-card {
+  background: white;
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 12px;
+}
