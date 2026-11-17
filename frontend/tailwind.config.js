@@ -1,6 +1,11 @@
 /** @type {import('tailwindcss').Config} */
+const path = require("path");
+
 module.exports = {
-  content: ["./index.html", "./src/**/*.{js,jsx}"],
+  content: [
+    path.join(__dirname, "index.html"),
+    path.join(__dirname, "src/**/*.{js,jsx}"),
+  ],
   corePlugins: {
     preflight: false,
   },
